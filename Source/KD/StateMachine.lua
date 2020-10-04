@@ -134,7 +134,7 @@ function StateMachine:Change(state)
   if (self.onceStates[state] ~= nil) then
     if (self.onceStates[state] == false) then
 
-      self:Trace(3, "Current state changed to: " .. self:GetStateName(state))
+      self:Trace(1, "Current state changed to: " .. self:GetStateName(state))
       self.current = state
       
       self:FireEvent(state)

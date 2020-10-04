@@ -12,7 +12,7 @@
 				"request": "launch",
 				"name": "Debug",
 				"luaVersion": "5.1",
-				"program": "${workspaceFolder}/TestMain.lua"
+				"program": "${workspaceFolder}/Source/TestMain.lua"
 			}
 		]
 	},

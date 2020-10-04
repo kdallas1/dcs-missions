@@ -81,7 +81,8 @@ Sound = {
   SelectTarget                  = nextSoundId(),
   CommandCentreUnderAttack      = nextSoundId(),
   OurBaseIsUnderAttack          = nextSoundId(),
-  MissionTimerInitialised       = nextSoundId()  
+  MissionTimerInitialised       = nextSoundId(),
+  Message                       = nextSoundId()
 }
 
 ---
@@ -887,6 +888,9 @@ function Mission:MessageAll(length, message)
   self:Trace(1, logType .. " Message: " .. message)
   self:Assert(duration, "Unknown message length")
   self.moose.message:New(message, duration):ToAll()
+
+  self:PlaySound(Sound.Message, 0)
+
 end
 
 --- 

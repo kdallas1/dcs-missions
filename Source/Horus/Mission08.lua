@@ -77,7 +77,7 @@ function Mission08:Mission08()
     function() return (self.enemyCommand:CountAliveUnits() == 0) end,
     function()
       self:MessageAll(MessageLength.Long, "Second objective met, RTB (Nalchik WP0)")
-      self:LandTestPlayers(self.playerGroup, self.moose.airbase.Caucasus.Nalchik, 400)
+      self:LandTestPlayers(self.moose.airbase.Caucasus.Nalchik, 400)
       self:PlaySound(Sound.SecondObjectiveMet)
     end
   )

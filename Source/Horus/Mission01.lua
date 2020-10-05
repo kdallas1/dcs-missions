@@ -140,7 +140,7 @@ end
 function Mission01:OnAllEwrDead()
 
   self:MessageAll(MessageLength.Short, "All EWRs are dead, RTB (carrier).")
-  self:LandTestPlayers(self.playerGroup, "Stennis", 400)
+  self:LandTestPlayers("Stennis", 400)
 
 end
 

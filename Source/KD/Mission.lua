@@ -18,14 +18,13 @@ Mission = {
   assert = true,
   mooseTrace = false,
   
-  _playerGroupName = "Dodge Squadron",
-  _playerPrefix = "Dodge",
+  playerPrefix = "Dodge",
+  testPlayerName = "Test Player",
+  singlePlayerGroupMode = true,
+  singlePlayerGroupName = "Dodge Squadron",
   
-  playerGroupName = nil,
-  playerPrefix = nil,
   playerCountMax = 0,
   playerMax = 4,
-  playerTestOn = true,
   
   gameLoopInterval = 1,
   messageTimeVeryShort = 5,
@@ -106,6 +105,8 @@ MissionState = {
 -- @param #Mission self
 function Mission:Mission(args)
   
+  self.playerTestOn = false
+  
   if args.moose then
     self.moose = args.moose
   else
@@ -133,7 +134,8 @@ function Mission:Mission(args)
   self.spawners = {}
   self.groups = {}
   self.units = {}
-  self.players = {}
+  self.playerUnits = {}
+  self.playerGroups = {}
   
   self.state = StateMachine:New()
   self.state.current = MissionState.MissionLoading
@@ -167,7 +169,8 @@ function Mission:Start()
   
   self:Trace(1, "Starting mission, " .. _VERSION)
 
-  self:LoadPlayers()
+  self:LoadTestPlayer()
+  self:UpdatePlayers()
   
   if self.OnStart then
     self:OnStart()
@@ -188,10 +191,13 @@ function Mission:GameLoop()
   
   self:UpdatePlayers()
   
-  self.events:UpdateFromGroupList(self.groups)
   self.events:UpdateFromSpawnerList(self.spawners)
+  self.events:UpdateFromGroupList(self.groups)
   self.events:UpdateFromUnitList(self.units)
-  self.events:UpdateFromUnitList(self.players)
+  
+  self.events:UpdateFromGroupList(self.playerGroups)
+  self.events:UpdateFromUnitList(self.playerUnits)
+  
   self.events:CheckUnitList()
   
   self.state:CheckTriggers()
@@ -626,6 +632,36 @@ function Mission:GetDcsNumber(i)
   return string.format("#%03d", i)
 end
 
+--- Get a list of all groups with a certain prefix.
+-- Note: The units must use #00n
+-- @param #Mission self
+-- @param #string prefix
+-- @param #number max
+-- @return #list<Wrapper.Group#GROUP>
+function Mission:FindGroupsByPrefix(prefix, max)
+
+  local list = {}
+  for i = 1, max do
+    local name = prefix .. " " .. self:GetDcsNumber(i)
+    self:Trace(4, "Finding group in Moose: " .. name)
+    
+    local group = self.moose.group:FindByName(name)
+    if group then
+      self:Trace(4, "Found group in Moose: " .. group:GetName())
+      list[#list + 1] = group
+      
+    else
+      self:Trace(4, "Did not find group in Moose: " .. name)
+    end
+    
+  end
+  
+  self:Trace(4, "Total groups found: " .. #list)
+  
+  return list
+  
+end
+
 --- Get a list of all units with a certain prefix.
 -- The `GROUP:GetUnits` function seems unreliable for getting all players 
 -- in a group of multiplayer clients, so let's try finding by a prefix.
@@ -725,7 +761,14 @@ end
 -- @param Wrapper.Group#GROUP playerGroup
 -- @param Wrapper.Airbase#AIRBASE airbase
 -- @param #number speed
-function Mission:LandTestPlayers(playerGroup, airbase, speed)
+function Mission:LandTestPlayers(airbase, speed)
+  
+  if not self.playerTestOn then
+    self:Trace(3, "Test mode off, skipping land test players")
+    return
+  end
+  
+  local playerGroup = self.playerGroups[1]
   
   self:Assert(playerGroup ~= nil, "Arg `playerGroup` was nil")
   self:Assert(airbase ~= nil, "Arg `airbase` was nil")
@@ -965,31 +1008,27 @@ end
 
 ---
 -- @param #Mission self
-function Mission:LoadPlayers()
+function Mission:LoadTestPlayer()
 
-  self.playerGroup = self.moose.group:FindByName(self._playerGroupName)
-  
-  -- if player didn't use slot on load, assume test mode 
-  if self.playerGroup then
-  
-    self.playerGroupName = self._playerGroupName
-    self.playerPrefix = self._playerPrefix
+  if self.playerTestOn then 
     
-  elseif self.playerTestOn then
-  
-    self.playerGroupName = "Test Squadron"
-    self.playerPrefix = "Test"
-    self.playerGroup = self.moose.group:FindByName(self.playerGroupName)
+    local testPlayer = self.moose.group:FindByName(self.testPlayerName)
+    if testPlayer then
     
-    if self.playerGroup then
-      self.playerGroup:Activate()
+      testPlayer:Activate()
+      self.playerGroups = {}
+      self.playerGroups[1] = testPlayer
+    
+      self.singlePlayerGroupMode = true
+      self.playerGroup = testPlayer
+      
     else
+      
       self:Trace(1, "Test group not found")
+      
     end
     
   end
-
-  self:UpdatePlayers()
 
 end
 
@@ -1134,11 +1173,30 @@ end
 ---
 -- @param #Mission self
 function Mission:UpdatePlayers()
+
+  if self.playerTestOn then
+    
+    self:Trace(3, "Test player on, skipping player update")
+    return
+    
+  end
   
-  if self.playerPrefix then
-    -- player list can change at any moment on an MP server, and is often 
-    -- out of sync with the group. this is used by the events system
-    self.players = self:FindUnitsByPrefix(self.playerPrefix, self.playerMax)
+  -- player list can change at any moment on an MP server, and is often 
+  -- out of sync with the group. this is used by the events system
+  self.playerUnits = self:FindUnitsByPrefix(self.playerPrefix, self.playerMax)
+  self.players = self.playerUnits
+  
+  if self.singlePlayerGroupMode then
+  
+    self.playerGroup = self.moose.group:FindByName(self.singlePlayerGroupName)
+  
+    self.playerGroups = {}
+    self.playerGroups[1] = self.playerGroup
+    
+  else
+    
+    self.playerGroups = self:FindGroupsByPrefix(self.playerPrefix, self.playerMax)
+    
   end
 
 end

@@ -38,13 +38,13 @@ function OFF_Mission01:OFF_Mission01()
   self.playersTookOff = false
 
   --self:SetTraceLevel(3)
-  self.playerTestOn = false
+  --self.playerTestOn = false
 
   self.state:AddStates(OFF_Mission01.State)
   self.state:CopyTrace(self)
 
-  self._playerPrefix = "Chevy"
-  self._playerGroupName = "Chevy #001"
+  self.playerPrefix = "Chevy"
+  self.singlePlayerGroupMode = false
 
   self.playerParking = self:NewMooseZone("Player Parking")
   self.stopBlueSpawn = self:NewMooseZone("Stop Blue Spawn")

@@ -217,7 +217,7 @@ function Mission04:OnExtractionComplete()
   self:PlaySound(Sound.FirstObjectiveMet)
   self:MessageAll(MessageLength.Short, "Extraction complete, RTB to Nalchik")
   self:Trace(1, "Friendly helos out of extraction zone")
-  self:LandTestPlayers(self.playerGroup, self.moose.airbase.Caucasus.Nalchik, 400)
+  self:LandTestPlayers(self.moose.airbase.Caucasus.Nalchik, 400)
   
 end
 

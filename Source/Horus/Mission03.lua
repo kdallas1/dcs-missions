@@ -213,7 +213,7 @@ function Mission03:OnEnemyDead(unit)
     self:Trace(1, "All MiGs are dead")
     self:PlaySound(Sound.FirstObjectiveMet, 2)
     self.moose.message:New("All enemy MiGs are dead! RTB to Nalchik", self.messageTimeLong):ToAll()    
-    self:LandTestPlayers(self.playerGroup, self.moose.airbase.Caucasus.Nalchik, 300)
+    self:LandTestPlayers(self.moose.airbase.Caucasus.Nalchik, 300)
   end
 end
 

@@ -222,7 +222,7 @@ function Mission09:OnEnemySoldiersDead()
   self:MessageAll(MessageLength.Long, "Second objective met. Land at Mineralnye Vody.")
   self:PlaySound(Sound.SecondObjectiveMet, 2)
   
-  self:LandTestPlayers(self.playerGroup, self.moose.airbase.Caucasus.Mineralnye_Vody, 400)
+  self:LandTestPlayers(self.moose.airbase.Caucasus.Mineralnye_Vody, 400)
   
 end
 

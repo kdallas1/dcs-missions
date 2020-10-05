@@ -69,15 +69,11 @@ local function Test_Start_Default_StateIsMissionStarted()
 
   local mock = NewMock({
     --trace = { _traceOn = true, _traceLevel = 4 },
-    })
+  })
 
   mock.mission:Start()
 
-  TestAssertEqual(
-    mock.mission.state.current,
-    MissionState.MissionStarted,
-    "state",
-    function(v) return mock.mission.state:GetStateName(v) end)
+  TestAssertMissionState(MissionState.MissionStarted, mock.mission)
 
 end
 
@@ -85,7 +81,7 @@ local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   local mock = NewMock({
     --trace = { _traceOn = true, _traceLevel = 4 },
-    })
+  })
 
   mock.mission:Start()
 
@@ -94,18 +90,14 @@ local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   mock.mission:GameLoop()
 
-  TestAssertEqual(
-    mock.mission.state.current,
-    OFF_Mission01.State.PlayersAirborne,
-    "state",
-    function(v) return mock.mission.state:GetStateName(v) end)
+  TestAssertMissionState(OFF_Mission01.State.PlayersAirborne, mock.mission)
 
 end
 
 local function Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn()
 
   local mock = NewMock({
-    trace = { _traceOn = true, _traceLevel = 4 },
+    --trace = { _traceOn = true, _traceLevel = 4 },
   })
 
   mock.mission:Start()
@@ -114,26 +106,73 @@ local function Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn()
 
   mock.mission:GameLoop()
 
-  TestAssertEqual(
-    mock.mission.state.current,
-    OFF_Mission01.State.RedInStopSpawn,
-    "state",
-    function(v) return mock.mission.state:GetStateName(v) end)
+  TestAssertMissionState(OFF_Mission01.State.RedInStopSpawn, mock.mission)
 
 end
 
 local function Test_BlueTanksInStopRedSpawnZone_StateIsBlueInStopSpawn()
 
+  local mock = NewMock({
+    --trace = { _traceOn = true, _traceLevel = 4 },
+  })
+
+  mock.mission:Start()
+
+  mock.mission.stopRedSpawn.IsVec3InZone = function() return true end
+
+  mock.mission:GameLoop()
+
+  TestAssertMissionState(OFF_Mission01.State.BlueInStopSpawn, mock.mission)
 
 end
 
 local function Test_RedTanksInLoseZone_StateIsMissionFailed()
+
+  local mock = NewMock({
+    --trace = { _traceOn = true, _traceLevel = 4 },
+  })
+
+  mock.mission:Start()
+
+  mock.mission.loseZone.IsVec3InZone = function() return true end
+
+  mock.mission:GameLoop()
+
+  TestAssertMissionState(MissionState.MissionFailed, mock.mission)
+  
 end
 
 local function Test_BlueTanksInWinZone_StateIsBlueInWinZone()
+
+  local mock = NewMock({
+    --trace = { _traceOn = true, _traceLevel = 4 },
+  })
+
+  mock.mission:Start()
+
+  mock.mission.winZone.IsVec3InZone = function() return true end
+
+  mock.mission:GameLoop()
+
+  TestAssertMissionState(OFF_Mission01.State.BlueInWinZone, mock.mission)
+  
 end
 
 local function Test_BlueTanksInWinZoneAndPlayersParked_MissionAccomplished()
+
+  local mock = NewMock({
+    --trace = { _traceOn = true, _traceLevel = 4 },
+  })
+
+  mock.mission:Start()
+
+  mock.mission.winZone.IsVec3InZone = function() return true end
+  mock.mission.playerParking.IsVec3InZone = function() return true end
+
+  mock.mission:GameLoop()
+
+  TestAssertMissionState(MissionState.MissionAccomplished, mock.mission)
+  
 end
 
 function Test_OFF_Mission01()

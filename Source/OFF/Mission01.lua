@@ -1,5 +1,4 @@
 dofile(baseDir .. "KD/Mission.lua")
-dofile(baseDir .. "OFF/OFF.lua")
 
 ---
 -- @type OFF_Mission01
@@ -12,12 +11,8 @@ OFF_Mission01 = {
   playerAirborneSpeed = 100,
   redTanksActive = true,
   blueTanksActive = true,
-  blueInWinZone = false,
   redTankSpawnRate = 300,
   blueTankSpawnRate = 360,
-  blueTankGroups = nil,
-  redTankGroups = nil,
-  playersTookOff = false
 }
 
 ---
@@ -34,11 +29,11 @@ OFF_Mission01.State = {
 -- @param #OFF_Mission01 self
 function OFF_Mission01:OFF_Mission01()
 
+  self.blueInWinZone = false
+  self.playersTookOff = false
+
   --self:SetTraceLevel(3)
   self.playerTestOn = false
-
-  -- TODO: figure out why this fixes the bug (and why the default isn't there)
-  self.blueInWinZone = false
 
   self.state:AddStates(OFF_Mission01.State)
   self.state:CopyTrace(self)

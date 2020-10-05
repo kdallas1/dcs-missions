@@ -73,8 +73,6 @@ local function Test_Start_Default_StateIsMissionStarted()
 
 end
 
---testOnly = Test_Start_Default_StateIsMissionStarted
-
 local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   local mock = NewMock({

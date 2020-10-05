@@ -62,11 +62,17 @@ function Events:FireEvent(event, arg)
   self:Assert(event, "Arg `event` was nil")
   
   local localHandlers = self.eventHandlers[event]
-  for i = 1, #localHandlers do
-    local eventHandler = localHandlers[i]
-    if eventHandler then
-      eventHandler(arg)
+  if localHandlers then
+  
+    for i = 1, #localHandlers do
+    
+      local eventHandler = localHandlers[i]
+      if eventHandler then
+        eventHandler(arg)
+      end
+      
     end
+    
   end
 end
 

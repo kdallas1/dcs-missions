@@ -83,8 +83,8 @@ local function Test_BothEnemyCommandsAreDead_StateIsEnemyCommandDead()
   mock.mission:GameLoop()
   
   TestAssertEqual(
-    Mission09.State.EnemyCommandDead,
     mock.mission.state.current,
+    Mission09.State.EnemyCommandDead,
     "mission state",
     function(v) return mock.mission.state:GetStateName(v) end)
 

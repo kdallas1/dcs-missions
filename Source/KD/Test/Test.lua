@@ -117,13 +117,13 @@ local function testToString(value, toString)
   
 end
 
-function TestAssertEqual(expected, actual, description, toString)
+function TestAssertEqual(actual, expected, description, toString)
   
-  local expectedString = testToString(expected, toString)
   local actualString = testToString(actual, toString)
+  local expectedString = testToString(expected, toString)
   
   local errorString = "Expected " .. description .. " to be [" .. expectedString .. "] but was [" .. actualString .. "]"
-  TestAssert(expected == actual, errorString, 2)
+  TestAssert(actual == expected, errorString, 2)
   
 end
 

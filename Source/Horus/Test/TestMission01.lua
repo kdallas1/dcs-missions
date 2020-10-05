@@ -123,8 +123,8 @@ local function Test_AllEwrDestroyed_StateIsAllEwrDead()
   mock.mission:GameLoop()
   
   TestAssertEqual(
-    Mission01.State.AllEwrDead,
     mock.mission.state.current,
+    Mission01.State.AllEwrDead,
     "mission state",
     function(v) return mock.mission.state:GetStateName(v) end)
 
@@ -144,8 +144,8 @@ local function Test_StateIsAllEwrDeadAndPlayersLanded_StateIsMissionAccomplished
   mock.mission:GameLoop()
   
   TestAssertEqual(
-    MissionState.MissionAccomplished,
     mock.mission.state.current,
+    MissionState.MissionAccomplished,
     "mission state",
     function(v) return mock.mission.state:GetStateName(v) end)
   

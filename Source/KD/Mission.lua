@@ -402,6 +402,7 @@ end
 function Mission:UnitsAreParked(zone, units)
   
   self:AssertType(zone, self.moose.zone)
+  self:Assert(units ~= nil, "Arg: `units` was nil.")
   
   if #units == 0 then
     return false

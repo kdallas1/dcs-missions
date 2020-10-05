@@ -95,7 +95,6 @@ MessageLength = {
 
 ---
 -- @type MissionState
--- @extends KD.State#State
 MissionState = {
   MissionLoading            = State:NextState(),
   MissionStarted            = State:NextState(),

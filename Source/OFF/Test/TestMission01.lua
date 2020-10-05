@@ -53,7 +53,7 @@ local function NewMock(fields)
 
   Table:Concat(args, fields)
 
-  mock.mission = OFF.Mission01:New(args)
+  mock.mission = OFF_Mission01:New(args)
 
   return mock
 
@@ -73,7 +73,7 @@ local function Test_Start_Default_StateIsMissionStarted()
 
 end
 
-testOnly = Test_Start_Default_StateIsMissionStarted
+--testOnly = Test_Start_Default_StateIsMissionStarted
 
 local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
@@ -89,7 +89,7 @@ local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
   mock.mission:GameLoop()
 
   TestAssert(
-    mock.mission.state.current == OFF.Mission01.State.PlayersAirborne,
+    mock.mission.state.current == OFF_Mission01.State.PlayersAirborne,
     "State should be: Players airborn")
 
 end
@@ -108,7 +108,7 @@ local function Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn()
   mock.mission:GameLoop()
 
   TestAssert(
-    mock.mission.state.current == OFF.Mission01.State.PlayersAirborne,
+    mock.mission.state.current == OFF_Mission01.State.PlayersAirborne,
     "State should be: Players airborn")
 
 end
@@ -127,7 +127,7 @@ end
 
 function Test_OFF_Mission01()
   return RunTests {
-    "OFF.Mission01",
+    "OFF_Mission01",
     Test_Start_Default_StateIsMissionStarted,
     Test_PlayerSpeedOver100_StateIsPlayerAirborne,
     Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn,
@@ -137,7 +137,5 @@ function Test_OFF_Mission01()
     Test_BlueTanksInWinZoneAndPlayersParked_MissionAccomplished
   }
 end
-
-
 
 --testOnly = Test_OFF_Mission01

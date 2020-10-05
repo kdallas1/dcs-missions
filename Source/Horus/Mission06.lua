@@ -263,3 +263,4 @@ function Mission06:EnemyFobAliveCount()
 end
 
 Mission06 = createClass(Mission, Mission06)
+Horus_Mission06 = Mission06

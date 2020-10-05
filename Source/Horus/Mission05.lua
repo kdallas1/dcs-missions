@@ -288,3 +288,4 @@ function Mission05:OnFriendlyHelosEscaped()
 end
 
 Mission05 = createClass(Mission, Mission05)
+Horus_Mission05 = Mission05

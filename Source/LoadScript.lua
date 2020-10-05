@@ -24,7 +24,11 @@ function LoadScript(baseDir_, missionId, campaign, enableTest)
   end
   
   local missionName = "Mission" .. missionId
+  local className = campaign .. "_" .. missionName
+  local class =_G[className]
+  
   dofile(baseDir .. campaign .. "/" .. missionName .. ".lua")
-  _G[missionName]:New():Start()
+  assert(class ~= nil, "Class does not exist: " .. className)
+  class:New():Start()
 
 end

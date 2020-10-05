@@ -2,10 +2,10 @@ dofile(baseDir .. "KD/Mission.lua")
 dofile(baseDir .. "OFF/OFF.lua")
 
 ---
--- @type OFF.Mission01
+-- @type OFF_Mission01
 -- @extends KD.Mission#Mission
-OFF.Mission01 = {
-  className = "OFF.Mission01",
+OFF_Mission01 = {
+  className = "OFF_Mission01",
 
   enableDebugMenu = true,
 
@@ -21,9 +21,9 @@ OFF.Mission01 = {
 }
 
 ---
--- @type OFF.Mission01.State
+-- @type OFF_Mission01.State
 -- @extends KD.Mission#MissionState
-OFF.Mission01.State = {
+OFF_Mission01.State = {
   PlayersAirborne = State:NextState(),
   RedInStopSpawn = State:NextState(),
   BlueInStopSpawn = State:NextState(),
@@ -31,8 +31,8 @@ OFF.Mission01.State = {
 }
 
 ---
--- @param #OFF.Mission01 self
-function OFF.Mission01:Mission01()
+-- @param #OFF_Mission01 self
+function OFF_Mission01:OFF_Mission01()
 
   --self:SetTraceLevel(3)
   self.playerTestOn = false
@@ -40,7 +40,7 @@ function OFF.Mission01:Mission01()
   -- TODO: figure out why this fixes the bug (and why the default isn't there)
   self.blueInWinZone = false
 
-  self.state:AddStates(OFF.Mission01.State)
+  self.state:AddStates(OFF_Mission01.State)
   self.state:CopyTrace(self)
 
   self._playerPrefix = "Chevy"
@@ -71,7 +71,7 @@ function OFF.Mission01:Mission01()
   self.redTankGroups = {}
 
   self.state:TriggerOnce(
-    OFF.Mission01.State.PlayersAirborne,
+    OFF_Mission01.State.PlayersAirborne,
     function() return self:AreUnitsAirborne(self.players, self.playerAirborneSpeed) end,
     function()
       self.playersTookOff = true
@@ -80,7 +80,7 @@ function OFF.Mission01:Mission01()
   )
 
   self.state:TriggerOnce(
-    OFF.Mission01.State.RedInStopSpawn,
+    OFF_Mission01.State.RedInStopSpawn,
     function() return self:AreAnyGroupsInZone(self.redTankGroups, self.stopBlueSpawn) end,
     function()
       self.blueTanksActive = false
@@ -89,7 +89,7 @@ function OFF.Mission01:Mission01()
   )
 
   self.state:TriggerOnce(
-    OFF.Mission01.State.BlueInStopSpawn,
+    OFF_Mission01.State.BlueInStopSpawn,
     function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.stopRedSpawn) end,
     function()
       self.redTanksActive = false
@@ -98,7 +98,7 @@ function OFF.Mission01:Mission01()
   )
 
   self.state:TriggerOnce(
-    OFF.Mission01.State.BlueInWinZone,
+    OFF_Mission01.State.BlueInWinZone,
     function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.winZone) end,
     function()
       self.blueInWinZone = true
@@ -125,43 +125,25 @@ function OFF.Mission01:Mission01()
 end
 
 ---
--- @param #OFF.Mission01 self
-function OFF.Mission01:OnStart()
+-- @param #OFF_Mission01 self
+function OFF_Mission01:OnStart()
 
   self:BeginBattle()
 
 end
 
 ---
--- @param #OFF.Mission01 self
-function OFF.Mission01:OnGameLoop()
-
-end
-
----
--- @param #OFF.Mission01 self
+-- @param #OFF_Mission01 self
 -- @param Wrapper.Unit#UNIT unit
-function OFF.Mission01:OnUnitSpawn(unit)
-
-end
-
----
--- @param #OFF.Mission01 self
--- @param Wrapper.Unit#UNIT unit
-function OFF.Mission01:OnPlayerSpawn(unit)
-
-end
-
----
--- @param #OFF.Mission01 self
--- @param Wrapper.Unit#UNIT unit
-function OFF.Mission01:OnUnitDead(unit)
+function OFF_Mission01:OnUnitDead(unit)
 
   self:Trace(1, "Unit dead: " .. unit:GetName())
 
 end
 
-function OFF.Mission01:BeginBattle()
+---
+-- @param #OFF_Mission01 self
+function OFF_Mission01:BeginBattle()
 
   self:MessageAll(MessageLength.VeryShort, "The battle has begun!", true)
 
@@ -204,7 +186,9 @@ function OFF.Mission01:BeginBattle()
 
 end
 
-function OFF.Mission01:AreAnyGroupsInZone(groups, zone)
+---
+-- @param #OFF_Mission01 self
+function OFF_Mission01:AreAnyGroupsInZone(groups, zone)
 
   for i = 1, #groups, 1 do
     local group = groups[i]
@@ -217,7 +201,9 @@ function OFF.Mission01:AreAnyGroupsInZone(groups, zone)
 
 end
 
-function Mission:AreUnitsAirborne(units, speed)
+---
+-- @param #OFF_Mission01 self
+function OFF_Mission01:AreUnitsAirborne(units, speed)
 
   self:Trace(3, "No units to check if airborne")
 
@@ -244,4 +230,4 @@ function Mission:AreUnitsAirborne(units, speed)
   return (airbornCount == #units)
 end
 
-OFF.Mission01 = createClass(Mission, OFF.Mission01)
+OFF_Mission01 = createClass(Mission, OFF_Mission01)

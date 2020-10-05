@@ -272,3 +272,4 @@ function Mission09:IsFriendlyCommandDead()
 end
 
 Mission09 = createClass(Mission, Mission09)
+Horus_Mission09 = Mission09

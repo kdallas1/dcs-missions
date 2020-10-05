@@ -174,3 +174,4 @@ function Mission01:ArePlayersLanded()
 end
 
 Mission01 = createClass(Mission, Mission01)
+Horus_Mission01 = Mission01 

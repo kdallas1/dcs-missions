@@ -218,3 +218,4 @@ function Mission03:OnEnemyDead(unit)
 end
 
 Mission03 = createClass(Mission, Mission03)
+Horus_Mission03 = Mission03

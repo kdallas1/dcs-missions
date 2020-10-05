@@ -222,3 +222,4 @@ function Mission07:ActivateEnemyJet(index)
 end
 
 Mission07 = createClass(Mission, Mission07)
+Horus_Mission07 = Mission07

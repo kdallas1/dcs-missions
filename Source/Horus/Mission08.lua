@@ -389,3 +389,4 @@ function Mission08:ReloadSam(site, sam)
 end
 
 Mission08 = createClass(Mission, Mission08)
+Horus_Mission08 = Mission08

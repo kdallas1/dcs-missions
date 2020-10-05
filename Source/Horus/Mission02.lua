@@ -64,3 +64,4 @@ function Mission02:OnUnitDead(unit)
 end
 
 Mission02 = createClass(Mission, Mission02)
+Horus_Mission02 = Mission02

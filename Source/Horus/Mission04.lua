@@ -222,3 +222,4 @@ function Mission04:OnExtractionComplete()
 end
 
 Mission04 = createClass(Mission, Mission04)
+Horus_Mission04 = Mission04

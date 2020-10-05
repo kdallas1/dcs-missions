@@ -19,9 +19,10 @@ Mission = {
   mooseTrace = false,
   
   playerPrefix = "Dodge",
-  testPlayerName = "Test Player",
   singlePlayerGroupMode = true,
   singlePlayerGroupName = "Dodge Squadron",
+  testPlayerGroupName = "Test Player",
+  testPlayerUnitName = "Test Player",
   
   playerCountMax = 0,
   playerMax = 4,
@@ -759,7 +760,6 @@ end
 
 ---
 -- @param #Mission self
--- @param Wrapper.Group#GROUP playerGroup
 -- @param Wrapper.Airbase#AIRBASE airbase
 -- @param #number speed
 function Mission:LandTestPlayers(airbase, speed)
@@ -1013,15 +1013,28 @@ function Mission:LoadTestPlayer()
 
   if self.playerTestOn then 
     
-    local testPlayer = self.moose.group:FindByName(self.testPlayerName)
-    if testPlayer then
+    local testPlayerGroup = self.moose.group:FindByName(self.testPlayerGroupName)
+    if testPlayerGroup then
     
-      testPlayer:Activate()
+      self:Trace(1, "Activating test player group: " .. testPlayerGroup:GetName())
+      
+      self.playerPrefix = self.testPlayerUnitName
+    
+      testPlayerGroup:Activate()
       self.playerGroups = {}
-      self.playerGroups[1] = testPlayer
+      self.playerGroups[1] = testPlayerGroup
+      
+      local testPlayerUnit = testPlayerGroup:GetUnit(1)
+      self:Trace(1, "Test player unit: " .. testPlayerUnit:GetName())
+      
+      self.playerUnits = {}
+      self.playerUnits[1] = testPlayerUnit
+      self.players = self.playerUnits
     
       self.singlePlayerGroupMode = true
-      self.playerGroup = testPlayer
+      self.playerGroup = testPlayerGroup
+      
+      self:MessageAll(MessageLength.Short, "Test player activated")
       
     else
       
@@ -1132,11 +1145,45 @@ end
 
 ---
 -- @param #Mission self
-function Mission:CreateDebugMenu(killObjects)
+function Mission:AddKillObjectToDebugMenu(killObject, menu)
 
   local power = 100
   local delay = 1
   local separation = 1
+  
+  if killObject.ClassName == self.moose.unit.ClassName then
+    self.moose.menu.coalitionCommand:New(
+      self.dcs.coalition.side.BLUE, "Kill unit: " .. killObject:GetName(), menu,
+      function() self:SelfDestructUnits({ killObject }, power, delay, separation) end)
+  end
+  
+  if killObject.ClassName == self.moose.group.ClassName then
+    self.moose.menu.coalitionCommand:New(
+      self.dcs.coalition.side.BLUE, "Kill group: " .. killObject:GetName(), menu,
+      function() self:SelfDestructGroup(killObject, power, delay, separation) end)
+  end
+  
+  if killObject.ClassName == self.moose.spawn.ClassName then
+    self.moose.menu.coalitionCommand:New(
+      self.dcs.coalition.side.BLUE, "Kill spawner groups: " .. killObject.SpawnTemplatePrefix, menu,
+      function() self:SelfDestructGroupsInSpawn(killObject, power, delay, separation) end)
+  end
+  
+  if type(killObject) == "table" then
+    local list = killObject
+    for i = 1, #list do
+      local innerKillObject = list[i]
+      if innerKillObject then 
+        self:AddKillObjectToDebugMenu(innerKillObject, menu)
+      end
+    end
+  end
+  
+end
+
+---
+-- @param #Mission self
+function Mission:CreateDebugMenu(killObjects)
 
   self:Assert(killObjects, "table")
 
@@ -1146,25 +1193,7 @@ function Mission:CreateDebugMenu(killObjects)
   
     local killObject = killObjects[i]
     if killObject then
-    
-      if killObject.ClassName == self.moose.unit.ClassName then
-        self.moose.menu.coalitionCommand:New(
-          self.dcs.coalition.side.BLUE, "Kill unit: " .. killObject:GetName(), menu,
-          function() self:SelfDestructUnits({ killObject }, power, delay, separation) end)
-      end
-      
-      if killObject.ClassName == self.moose.group.ClassName then
-        self.moose.menu.coalitionCommand:New(
-          self.dcs.coalition.side.BLUE, "Kill group: " .. killObject:GetName(), menu,
-          function() self:SelfDestructGroup(killObject, power, delay, separation) end)
-      end
-      
-      if killObject.ClassName == self.moose.spawn.ClassName then
-        self.moose.menu.coalitionCommand:New(
-          self.dcs.coalition.side.BLUE, "Kill spawner groups: " .. killObject.SpawnTemplatePrefix, menu,
-          function() self:SelfDestructGroupsInSpawn(killObject, power, delay, separation) end)
-      end
-    
+      self:AddKillObjectToDebugMenu(killObject, menu)
     end
     
   end

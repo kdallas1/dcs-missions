@@ -73,7 +73,7 @@ local function Test_Start_Default_StateIsMissionStarted()
 
 end
 
-local function Test_PlayerSpeedOver100_BattleBegins()
+local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   local mock = NewMock({
     trace = { _traceOn = true, _traceLevel = 3 },
@@ -87,7 +87,7 @@ local function Test_PlayerSpeedOver100_BattleBegins()
   mock.mission:GameLoop()
 
   TestAssert(
-    mock.mission.state.current == Mission01.State.PlayersAirborn,
+    mock.mission.state.current == Mission01.State.PlayersAirborne,
     "State should be: Players airborn")
 
 end
@@ -96,7 +96,7 @@ function Test_Mission01()
   return RunTests {
     "Mission01",
     Test_Start_Default_StateIsMissionStarted,
-    Test_PlayerSpeedOver100_BattleBegins
+    Test_PlayerSpeedOver100_StateIsPlayerAirborne
   }
 end
 

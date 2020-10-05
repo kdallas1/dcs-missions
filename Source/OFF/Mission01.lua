@@ -16,14 +16,17 @@ Mission01 = {
   blueTanksActive = true,
   blueInWinZone = false,
   redTankSpawnRate = 300,
-  blueTankSpawnRate = 360
+  blueTankSpawnRate = 360,
+  
+  blueTankGroups = nil,
+  redTankGroups = nil,
 }
 
 ---
 -- @type Mission01.State
 -- @extends KD.Mission#MissionState
 Mission01.State = {
-  PlayersAirborn = State:NextState(),
+  PlayersAirborne = State:NextState(),
   RedInStopSpawn = State:NextState(),
   BlueInStopSpawn = State:NextState(),
   BlueInWinZone = State:NextState(),
@@ -65,16 +68,19 @@ function Mission01:Mission01()
   for i = 1, 3, 1 do
     self.blueTanks[i] = self:NewMooseSpawn("Blue Tanks #00" .. i)
   end
+  
+  self.blueTankGroups = {}
+  self.redTankGroups = {}
 
   self.state:TriggerOnce(
-    Mission01.State.PlayersAirborn,
-    function() return self:AreUnitsAirborn(self.players, self.playerAirborneSpeed) end,
+    Mission01.State.PlayersAirborne,
+    function() return self:AreUnitsAirborne(self.players, self.playerAirborneSpeed) end,
     function() return self:BeginBattle() end
   )
 
   self.state:TriggerOnce(
     Mission01.State.RedInStopSpawn,
-    function() return self:AreSpawnerGroupsInZone(self.redTanks, self.stopBlueSpawn) end,
+    function() return self:AreAnyGroupsInZone(self.redTankGroups, self.stopBlueSpawn) end,
     function() 
         self.blueTanksActive = false
         self:MessageAll(MessageLength.Short, "No more blue reinforcements")
@@ -83,7 +89,7 @@ function Mission01:Mission01()
 
   self.state:TriggerOnce(
     Mission01.State.BlueInStopSpawn,
-    function() return self:AreSpawnerGroupsInZone(self.blueTanks, self.stopRedSpawn) end,
+    function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.stopRedSpawn) end,
     function()
         self.redTanksActive = false
         self:MessageAll(MessageLength.Short, "No more red reinforcements")
@@ -92,7 +98,7 @@ function Mission01:Mission01()
 
   self.state:TriggerOnce(
     Mission01.State.BlueInWinZone,
-    function() return self:AreSpawnerGroupsInZone(self.blueTanks, self.winZone) end,
+    function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.winZone) end,
     function()
         self.blueInWinZone = true
         self:MessageAll(MessageLength.Short, "Blue tanks made it to the city")
@@ -107,7 +113,7 @@ function Mission01:Mission01()
   
   self.state:TriggerOnce(
     MissionState.MissionFailed,
-    function() return self:AreSpawnerGroupsInZone(self.redTanks, self.loseZone) end,
+    function() return self:AreAnyGroupsInZone(self.redTankGroups, self.loseZone) end,
     function() self:MessageAll(MessageLength.Short, "Red tanks made it to our FARP") end
   )
   
@@ -175,7 +181,7 @@ function Mission01:BeginBattle()
 
                 self:MessageAll(MessageLength.VeryShort, "Red tank inbound")
                 local spawner = self.redTanks[randomIndex]
-                spawner:Spawn()
+                self.redTankGroups[#self.redTankGroups] = spawner:Spawn()
             end
         end
     end, {}, 0, self.redTankSpawnRate)
@@ -186,24 +192,19 @@ function Mission01:BeginBattle()
         if self.blueTanksActive then
             for i = 1, 3, 1 do
                 self:MessageAll(MessageLength.VeryShort, "Blue tank inbound")
-                self.blueTanks[i]:Spawn()
+                self.blueTankGroups[#self.blueTankGroups] = self.blueTanks[i]:Spawn()
             end
         end
     end, {}, 0, self.blueTankSpawnRate)
 
 end
 
-function Mission01:AreSpawnerGroupsInZone(spawnerList, zone)
+function Mission01:AreAnyGroupsInZone(groups, zone)
     
-  for i = 1, #spawnerList, 1 do
-    local spawner = spawnerList[i]
-
-    for j = 1, spawner.SpawnCount, 1 do
-
-        local group = spawner:GetGroupFromIndex(i)
-        if group and group:IsAlive() and self:UnitsAreInZone(zone, group:GetUnits()) then
-            return true
-        end
+  for i = 1, #groups, 1 do
+    local group = groups[i]
+    if self:UnitsAreInZone(zone, group:GetUnits()) then
+        return true
     end
   end
 
@@ -211,7 +212,7 @@ function Mission01:AreSpawnerGroupsInZone(spawnerList, zone)
 
 end
 
-function Mission:AreUnitsAirborn(units, speed)
+function Mission:AreUnitsAirborne(units, speed)
   
   self:Trace(3, "No units to check if airborne")
 
@@ -233,7 +234,7 @@ function Mission:AreUnitsAirborn(units, speed)
   end
   
   self:Trace(3, "Unit count: " .. #units)
-  self:Trace(3, "Airborn count: " .. airbornCount)
+  self:Trace(3, "Airborne count: " .. airbornCount)
   
   return (airbornCount == #units)
 end

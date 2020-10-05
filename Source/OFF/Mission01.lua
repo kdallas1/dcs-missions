@@ -38,7 +38,9 @@ function OFF_Mission01:OFF_Mission01()
   self.playersTookOff = false
 
   --self:SetTraceLevel(3)
-  --self.playerTestOn = false
+  --self.playerTestOn = true
+  self.testPlayerGroupName = "Test Squadron"
+  self.testPlayerUnitName = "Test"
 
   self.state:AddStates(OFF_Mission01.State)
   self.state:CopyTrace(self)
@@ -72,7 +74,7 @@ function OFF_Mission01:OFF_Mission01()
 
   self.state:TriggerOnce(
     OFF_Mission01.State.PlayersAirborne,
-    function() return self:AreUnitsAirborne(self.players, self.playerAirborneSpeed) end,
+    function() return self:AreUnitsAirborne(self.playerUnits, self.playerAirborneSpeed) end,
     function()
       self.playersTookOff = true
       --self:BeginBattle()
@@ -102,13 +104,14 @@ function OFF_Mission01:OFF_Mission01()
     function() return self:AreAnyGroupsInZone(self.winZone, self.blueTankGroups) end,
     function()
       self.blueInWinZone = true
-      self:MessageAll(MessageLength.Short, "Blue tanks made it to the city", true)
+      self:MessageAll(MessageLength.Long, "Blue tanks made it to the city, RTB!", true)
+      self:LandTestPlayers(self.moose.airbase.Caucasus.Anapa_Vityazevo, 450)
     end
   )
 
   self.state:TriggerOnce(
     MissionState.MissionAccomplished,
-    function() return self.blueInWinZone and self:UnitsAreParked(self.playerParking, self.players) end,
+    function() return self.blueInWinZone and self:UnitsAreParked(self.playerParking, self.playerUnits) end,
     function()
       if self.playersTookOff then
         self:MessageAll(MessageLength.Short, "Nice landing!", true)
@@ -119,7 +122,13 @@ function OFF_Mission01:OFF_Mission01()
   self.state:TriggerOnce(
     MissionState.MissionFailed,
     function() return self:AreAnyGroupsInZone(self.loseZone, self.redTankGroups) end,
-    function() self:MessageAll(MessageLength.Short, "Red tanks made it to our FARP", true) end
+    function()
+      -- BUG: this adds an event handler the mission failed event,
+      -- so if the player dies, then this if prevents the message from being shown. 
+      if self:AreAnyGroupsInZone(self.loseZone, self.redTankGroups) then
+        self:MessageAll(MessageLength.Long, "Red tanks made it to our FARP", true)
+      end 
+    end
   )
 
 end
@@ -129,6 +138,15 @@ end
 function OFF_Mission01:OnStart()
 
   self:BeginBattle()
+  
+  if self.enableDebugMenu then
+    self:CreateDebugMenu({
+      self.playerGroups,
+      self.redAir,
+      self.redTanks,
+      self.blueTanks,
+    })
+  end
 
 end
 

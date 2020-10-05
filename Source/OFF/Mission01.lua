@@ -13,6 +13,11 @@ OFF_Mission01 = {
   blueTanksActive = true,
   redTankSpawnRate = 300,
   blueTankSpawnRate = 360,
+  
+  redAirSpawnMax = 3,
+  redTanksSpawnerMax = 7,
+  redTanksMaxPerSpawn = 3,
+  blueTanksSpawnerMax = 3,
 }
 
 ---
@@ -48,17 +53,17 @@ function OFF_Mission01:OFF_Mission01()
   self.loseZone = self:NewMooseZone("Lose")
 
   self.redAir = {}
-  for i = 1, 3, 1 do
+  for i = 1, self.redAirSpawnMax do
     self.redAir[i] = self:GetMooseGroup("Red Air #00" .. i)
   end
 
   self.redTanks = {}
-  for i = 1, 7, 1 do
+  for i = 1, self.redTanksSpawnerMax do
     self.redTanks[i] = self:NewMooseSpawn("Red Tanks #00" .. i)
   end
 
   self.blueTanks = {}
-  for i = 1, 3, 1 do
+  for i = 1, self.blueTanksSpawnerMax do
     self.blueTanks[i] = self:NewMooseSpawn("Blue Tanks #00" .. i)
   end
 
@@ -143,7 +148,7 @@ function OFF_Mission01:BeginBattle()
   self:MessageAll(MessageLength.VeryShort, "The battle has begun!", true)
 
   self:MessageAll(MessageLength.VeryShort, "Enemy air inbound", true)
-  for i = 1, 3, 1 do
+  for i = 1, self.redAirSpawnMax do
     self.redAir[i]:Activate()
   end
 
@@ -153,14 +158,14 @@ function OFF_Mission01:BeginBattle()
     if self.redTanksActive then
 
       local randoms = {}
-      for i = 1, 7, 1 do
+      for i = 1, self.redTanksSpawnerMax do
         randoms[i] = i
       end
       List:Shuffle(randoms)
 
       self:MessageAll(MessageLength.VeryShort, "Red tanks inbound", true)
         
-      for i = 1, 3, 1 do
+      for i = 1, self.redTanksMaxPerSpawn do
         local randomIndex = randoms[i]
         local spawner = self.redTanks[randomIndex]
         self.redTankGroups[#self.redTankGroups] = spawner:Spawn()
@@ -175,7 +180,7 @@ function OFF_Mission01:BeginBattle()
       
       self:MessageAll(MessageLength.VeryShort, "Blue tanks inbound", true)
       
-      for i = 1, 3, 1 do
+      for i = 1, self.blueTanksSpawnerMax do
         self.blueTankGroups[#self.blueTankGroups] = self.blueTanks[i]:Spawn()
       end
     end
@@ -187,13 +192,19 @@ end
 -- @param #OFF_Mission01 self
 function OFF_Mission01:AreAnyGroupsInZone(groups, zone)
 
-  for i = 1, #groups, 1 do
+  self:Trace(3, "Checking if groups are in zone. Zone=" .. zone:GetName() .. " Groups=" .. #groups)
+
+  for i = 1, #groups do
     local group = groups[i]
+    self:Trace(3, "Checking group:" .. group:GetName())
+    
     if self:UnitsAreInZone(zone, group:GetUnits()) then
+      self:Trace(3, "Group was in zone")
       return true
     end
   end
 
+  self:Trace(3, "No groups were in the zone")
   return false
 
 end

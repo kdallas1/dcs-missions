@@ -127,6 +127,14 @@ function TestAssertEqual(actual, expected, description, toString)
   
 end
 
+function TestAssertMissionState(state, mission)
+  
+  TestAssertEqual(
+    mission.state.current, state, "state",
+    function(v) return mission.state:GetStateName(v) end)
+  
+end
+
 function TestAssert(condition, errorString, debugStackPosition)
   
   if debugStackPosition == nil then debugStackPosition = 1 end

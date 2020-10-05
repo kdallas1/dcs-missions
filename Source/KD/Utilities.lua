@@ -2,6 +2,7 @@ Table = {}
 List = {}
 Boolean = {}
 Debug = {}
+String = {}
 
 --- 
 -- @param #list list
@@ -68,4 +69,12 @@ function Table:Concat(t1, t2)
       t1[k] = v
   end
   return t1
+end
+
+function String:Split(s, delimiter)
+  local result = {}
+  for part in string.gmatch(s, "([^" .. delimiter .. "]+)") do
+    table.insert(result, part)
+  end
+  return result
 end

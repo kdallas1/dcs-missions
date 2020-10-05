@@ -102,6 +102,21 @@ local function Test_New_ConstructorsCalled()
   
 end
 
+local function Test_New_ConstructorCalledWithoutDot()
+  
+  local calledCtor = false
+  local ClassWithDot = {
+    className = "ClassWithDot",
+    ClassWithDot = function() calledCtor = true end
+  }
+  local ClassWithDot = createClass(ClassWithDot, KDObject)
+  
+  local c = ClassWithDot:New()
+  
+  TestAssert(calledCtor, "Expected ctor call for ClassWithDot")
+  
+end
+
 local function Test_CreateClass_CtorCallOrder()
 
   local TestChild1 = { className = "TestChild1" }
@@ -275,6 +290,7 @@ function Test_Object()
     Test_CreateClass_ClassDeclaredAfterFunctions_ChildFunctionDoesNotOverride,
     Test_CreateClass_ChildClassDeclaration_ChildCtorNotCalledOnParentNew,
     Test_New_ConstructorsCalled,
+    Test_New_ConstructorCalledWithoutDot,
     Test_New_ConstructorArgsPassed,
     Test_New_ParentInstantiated_ChildBaseObjectCtorCalled
   }

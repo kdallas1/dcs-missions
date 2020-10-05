@@ -121,12 +121,21 @@ function createClass(...)
     for i = 1, #classes do
       local class = classes[i]
       
-      -- constructors are named the same as their class
-      local ctor = class[class.className]
+      if class.className ~= nil then
       
-      if ctor then
-        ctor(o, args)
+        -- for classes in a module, use the last part for the ctor name
+        local parts = String:Split(class.className, ".")
+        local lastPart = parts[#parts]
+        
+        -- constructors are named the same as their class
+        local ctor = class[lastPart]
+        
+        if ctor then
+          ctor(o, args)
+        end
+        
       end
+      
     end
     
     -- object

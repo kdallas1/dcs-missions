@@ -1,13 +1,11 @@
 dofile(baseDir .. "KD/Mission.lua")
-
----
--- @module Horus.Mission01
+dofile(baseDir .. "OFF/OFF.lua")
 
 --- 
--- @type Mission01
+-- @type OFF.Mission01
 -- @extends KD.Mission#Mission
-Mission01 = {
-  className = "Mission01",
+OFF.Mission01 = {
+  className = "OFF.Mission01",
   
   enableDebugMenu = true,
 
@@ -17,15 +15,15 @@ Mission01 = {
   blueInWinZone = false,
   redTankSpawnRate = 300,
   blueTankSpawnRate = 360,
-  
   blueTankGroups = nil,
   redTankGroups = nil,
+  playersTookOff = false
 }
 
 ---
--- @type Mission01.State
+-- @type OFF.Mission01.State
 -- @extends KD.Mission#MissionState
-Mission01.State = {
+OFF.Mission01.State = {
   PlayersAirborne = State:NextState(),
   RedInStopSpawn = State:NextState(),
   BlueInStopSpawn = State:NextState(),
@@ -33,8 +31,8 @@ Mission01.State = {
 }
 
 ---
--- @param #Mission01 self
-function Mission01:Mission01()
+-- @param #OFF.Mission01 self
+function OFF.Mission01:Mission01()
 
   --self:SetTraceLevel(3)
   self.playerTestOn = false
@@ -42,7 +40,7 @@ function Mission01:Mission01()
   -- TODO: figure out why this fixes the bug (and why the default isn't there)
   self.blueInWinZone = false
   
-  self.state:AddStates(Mission01.State)
+  self.state:AddStates(OFF.Mission01.State)
   self.state:CopyTrace(self)
 
   self._playerPrefix = "Chevy"
@@ -73,95 +71,102 @@ function Mission01:Mission01()
   self.redTankGroups = {}
 
   self.state:TriggerOnce(
-    Mission01.State.PlayersAirborne,
+    OFF.Mission01.State.PlayersAirborne,
     function() return self:AreUnitsAirborne(self.players, self.playerAirborneSpeed) end,
-    function() return self:BeginBattle() end
+    function()
+      self.playersTookOff = true 
+      return self:BeginBattle()
+    end
   )
 
   self.state:TriggerOnce(
-    Mission01.State.RedInStopSpawn,
+    OFF.Mission01.State.RedInStopSpawn,
     function() return self:AreAnyGroupsInZone(self.redTankGroups, self.stopBlueSpawn) end,
     function() 
         self.blueTanksActive = false
-        self:MessageAll(MessageLength.Short, "No more blue reinforcements")
+        self:MessageAll(MessageLength.Short, "No more blue reinforcements", true)
     end
   )
 
   self.state:TriggerOnce(
-    Mission01.State.BlueInStopSpawn,
+    OFF.Mission01.State.BlueInStopSpawn,
     function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.stopRedSpawn) end,
     function()
         self.redTanksActive = false
-        self:MessageAll(MessageLength.Short, "No more red reinforcements")
+        self:MessageAll(MessageLength.Short, "No more red reinforcements", true)
     end
   )
 
   self.state:TriggerOnce(
-    Mission01.State.BlueInWinZone,
+    OFF.Mission01.State.BlueInWinZone,
     function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.winZone) end,
     function()
         self.blueInWinZone = true
-        self:MessageAll(MessageLength.Short, "Blue tanks made it to the city")
+        self:MessageAll(MessageLength.Short, "Blue tanks made it to the city", true)
     end
   )
 
   self.state:TriggerOnce(
     MissionState.MissionAccomplished,
     function() return self.blueInWinZone and self:UnitsAreParked(self.playerParking, self.players) end,
-    function() self:MessageAll(MessageLength.Short, "Nice landing") end
+    function()
+      if self.playersTookOff then
+        self:MessageAll(MessageLength.Short, "Nice landing!", true)
+      end 
+    end
   )
   
   self.state:TriggerOnce(
     MissionState.MissionFailed,
     function() return self:AreAnyGroupsInZone(self.redTankGroups, self.loseZone) end,
-    function() self:MessageAll(MessageLength.Short, "Red tanks made it to our FARP") end
+    function() self:MessageAll(MessageLength.Short, "Red tanks made it to our FARP", true) end
   )
   
 end
 
 ---
--- @param #Mission01 self
-function Mission01:OnStart()
+-- @param #OFF.Mission01 self
+function OFF.Mission01:OnStart()
 
     self:BeginBattle()
 
 end
 
 ---
--- @param #Mission01 self
-function Mission01:OnGameLoop()
+-- @param #OFF.Mission01 self
+function OFF.Mission01:OnGameLoop()
   
 end
 
 ---
--- @param #Mission01 self
+-- @param #OFF.Mission01 self
 -- @param Wrapper.Unit#UNIT unit
-function Mission01:OnUnitSpawn(unit)
+function OFF.Mission01:OnUnitSpawn(unit)
 
 end
 
 ---
--- @param #Mission01 self
+-- @param #OFF.Mission01 self
 -- @param Wrapper.Unit#UNIT unit
-function Mission01:OnPlayerSpawn(unit)
+function OFF.Mission01:OnPlayerSpawn(unit)
 
 end
 
 ---
--- @param #Mission01 self
+-- @param #OFF.Mission01 self
 -- @param Wrapper.Unit#UNIT unit
-function Mission01:OnUnitDead(unit)
+function OFF.Mission01:OnUnitDead(unit)
 
   self:Trace(1, "Unit dead: " .. unit:GetName())
 
 end
 
-function Mission01:BeginBattle()
-
-    self:MessageAll(MessageLength.VeryShort, "The battle has begun!")
+function OFF.Mission01:BeginBattle()
+    
+    self:MessageAll(MessageLength.VeryShort, "The battle has begun!", true)
 
     for i = 1, 3, 1 do
-        self:MessageAll(MessageLength.VeryShort, "Enemy air inbound")
+        self:MessageAll(MessageLength.VeryShort, "Enemy air inbound", true)
         self.redAir[i]:Activate()
     end
 
@@ -179,7 +184,7 @@ function Mission01:BeginBattle()
             for i = 1, 3, 1 do
                 local randomIndex = randoms[i]
 
-                self:MessageAll(MessageLength.VeryShort, "Red tank inbound")
+                self:MessageAll(MessageLength.VeryShort, "Red tank inbound", true)
                 local spawner = self.redTanks[randomIndex]
                 self.redTankGroups[#self.redTankGroups] = spawner:Spawn()
             end
@@ -191,7 +196,7 @@ function Mission01:BeginBattle()
 
         if self.blueTanksActive then
             for i = 1, 3, 1 do
-                self:MessageAll(MessageLength.VeryShort, "Blue tank inbound")
+                self:MessageAll(MessageLength.VeryShort, "Blue tank inbound", true)
                 self.blueTankGroups[#self.blueTankGroups] = self.blueTanks[i]:Spawn()
             end
         end
@@ -199,7 +204,7 @@ function Mission01:BeginBattle()
 
 end
 
-function Mission01:AreAnyGroupsInZone(groups, zone)
+function OFF.Mission01:AreAnyGroupsInZone(groups, zone)
     
   for i = 1, #groups, 1 do
     local group = groups[i]
@@ -239,4 +244,4 @@ function Mission:AreUnitsAirborne(units, speed)
   return (airbornCount == #units)
 end
 
-Mission01 = createClass(Mission, Mission01)
+OFF.Mission01 = createClass(Mission, OFF.Mission01)

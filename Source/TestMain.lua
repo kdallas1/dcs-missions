@@ -13,10 +13,10 @@ baseDir = scriptPath()
 assert(tostring(_VERSION) == "Lua 5.1", "Requires Lua 5.1, but was " .. _VERSION)
 
 dofile(baseDir .. "KD/Test/Test.lua")
---dofile(baseDir .. "Horus/Test/Test.lua")
+dofile(baseDir .. "Horus/Test/Test.lua")
 dofile(baseDir .. "OFF/Test/Test.lua")
 
 Test {
-  --Test_Horus,
+  Test_Horus,
   Test_OFF
 }

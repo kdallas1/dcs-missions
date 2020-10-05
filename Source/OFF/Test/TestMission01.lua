@@ -53,7 +53,7 @@ local function NewMock(fields)
 
   Table:Concat(args, fields)
 
-  mock.mission = Mission01:New(args)
+  mock.mission = OFF.Mission01:New(args)
 
   return mock
   
@@ -76,7 +76,7 @@ end
 local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   local mock = NewMock({
-    trace = { _traceOn = true, _traceLevel = 3 },
+    --trace = { _traceOn = true, _traceLevel = 3 },
   })
 
   mock.mission:Start()
@@ -87,17 +87,53 @@ local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
   mock.mission:GameLoop()
 
   TestAssert(
-    mock.mission.state.current == Mission01.State.PlayersAirborne,
+    mock.mission.state.current == OFF.Mission01.State.PlayersAirborne,
     "State should be: Players airborn")
 
 end
 
-function Test_Mission01()
+local function Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn()
+
+  local mock = NewMock({
+    --trace = { _traceOn = true, _traceLevel = 3 },
+  })
+
+  mock.mission:Start()
+
+  mock.player1.velocity = 101
+  mock.player2.velocity = 101
+
+  mock.mission:GameLoop()
+
+  TestAssert(
+    mock.mission.state.current == OFF.Mission01.State.PlayersAirborne,
+    "State should be: Players airborn")
+
+end
+
+local function Test_BlueTanksInStopRedSpawnZone_StateIsBlueInStopSpawn()
+end
+
+local function Test_RedTanksInLoseZone_StateIsMissionFailed()
+end
+
+local function Test_BlueTanksInWinZone_StateIsBlueInWinZone()
+end
+
+local function Test_BlueTanksInWinZoneAndPlayersParked_MissionAccomplished()
+end
+
+function Test_OFF_Mission01()
   return RunTests {
-    "Mission01",
+    "OFF.Mission01",
     Test_Start_Default_StateIsMissionStarted,
-    Test_PlayerSpeedOver100_StateIsPlayerAirborne
+    Test_PlayerSpeedOver100_StateIsPlayerAirborne,
+    Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn,
+    Test_BlueTanksInStopRedSpawnZone_StateIsBlueInStopSpawn,
+    Test_RedTanksInLoseZone_StateIsMissionFailed,
+    Test_BlueTanksInWinZone_StateIsBlueInWinZone,
+    Test_BlueTanksInWinZoneAndPlayersParked_MissionAccomplished
   }
 end
 
---testOnly = Test_Mission01
+--testOnly = Test_OFF_Mission01

@@ -864,7 +864,8 @@ end
 -- @param #Mission self
 -- @param #MessageLength length
 -- @param #string message
-function Mission:MessageAll(length, message)
+-- @param #boolean playSound
+function Mission:MessageAll(length, message, playSound)
 
   self:Assert(length ~= nil, "Arg: `length` was nil.")
   self:Assert(message ~= nil, "Arg: `message` was nil.")
@@ -889,7 +890,9 @@ function Mission:MessageAll(length, message)
   self:Assert(duration, "Unknown message length")
   self.moose.message:New(message, duration):ToAll()
 
-  self:PlaySound(Sound.Message, 0)
+  if playSound then
+    self:PlaySound(Sound.Message, 0)
+  end
 
 end
 

@@ -81,7 +81,7 @@ function OFF_Mission01:OFF_Mission01()
 
   self.state:TriggerOnce(
     OFF_Mission01.State.RedInStopSpawn,
-    function() return self:AreAnyGroupsInZone(self.redTankGroups, self.stopBlueSpawn) end,
+    function() return self:AreAnyGroupsInZone(self.stopBlueSpawn, self.redTankGroups) end,
     function()
       self.blueTanksActive = false
       self:MessageAll(MessageLength.Short, "No more blue reinforcements", true)
@@ -90,7 +90,7 @@ function OFF_Mission01:OFF_Mission01()
 
   self.state:TriggerOnce(
     OFF_Mission01.State.BlueInStopSpawn,
-    function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.stopRedSpawn) end,
+    function() return self:AreAnyGroupsInZone(self.stopRedSpawn, self.blueTankGroups) end,
     function()
       self.redTanksActive = false
       self:MessageAll(MessageLength.Short, "No more red reinforcements", true)
@@ -99,7 +99,7 @@ function OFF_Mission01:OFF_Mission01()
 
   self.state:TriggerOnce(
     OFF_Mission01.State.BlueInWinZone,
-    function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.winZone) end,
+    function() return self:AreAnyGroupsInZone(self.winZone, self.blueTankGroups) end,
     function()
       self.blueInWinZone = true
       self:MessageAll(MessageLength.Short, "Blue tanks made it to the city", true)
@@ -118,7 +118,7 @@ function OFF_Mission01:OFF_Mission01()
 
   self.state:TriggerOnce(
     MissionState.MissionFailed,
-    function() return self:AreAnyGroupsInZone(self.redTankGroups, self.loseZone) end,
+    function() return self:AreAnyGroupsInZone(self.loseZone, self.redTankGroups) end,
     function() self:MessageAll(MessageLength.Short, "Red tanks made it to our FARP", true) end
   )
 
@@ -185,27 +185,6 @@ function OFF_Mission01:BeginBattle()
       end
     end
   end, {}, 0, self.blueTankSpawnRate)
-
-end
-
----
--- @param #OFF_Mission01 self
-function OFF_Mission01:AreAnyGroupsInZone(groups, zone)
-
-  self:Trace(3, "Checking if groups are in zone. Zone=" .. zone:GetName() .. " Groups=" .. #groups)
-
-  for i = 1, #groups do
-    local group = groups[i]
-    self:Trace(3, "Checking group:" .. group:GetName())
-    
-    if self:UnitsAreInZone(zone, group:GetUnits()) then
-      self:Trace(3, "Group was in zone")
-      return true
-    end
-  end
-
-  self:Trace(3, "No groups were in the zone")
-  return false
 
 end
 

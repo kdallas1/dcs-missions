@@ -156,14 +156,16 @@ function MockMoose:MockSpawn(fields)
   local spawn = self:MockObject(
     self.spawn.ClassName,
     {
+      group = self:MockGroup(),
+    
       SpawnCount = 0,
       SpawnTemplatePrefix = "Mock Spawn",
       SpawnAliasPrefix = nil,
       
       InitLimit = function() return self end,
-      Spawn = function() return self:MockGroup() end,
+      Spawn = function(self) return self.group end,
+      SpawnAtAirbase = function(self) return self.group end,
       SpawnScheduled = function(self) return self end,
-      SpawnAtAirbase = function() return self:MockGroup() end,
       SpawnScheduleStop = function(self) return self end,
       SpawnScheduleStart = function(self) return self end,
       

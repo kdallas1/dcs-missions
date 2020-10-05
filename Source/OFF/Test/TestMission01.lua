@@ -36,11 +36,17 @@ local function NewMock(fields)
   end
 
   for i = 1, 7, 1 do
-    mock.moose:MockGroup({ name = "Red Tanks #00" .. i })
+    mock.moose:MockGroup({
+      name = "Red Tanks #00" .. i,
+      units = { mock.moose:MockUnit() }
+    })
   end
 
   for i = 1, 3, 1 do
-    mock.moose:MockGroup({ name = "Blue Tanks #00" .. i })
+    mock.moose:MockGroup({
+      name = "Blue Tanks #00" .. i,
+      units = { mock.moose:MockUnit() }
+    })
   end
 
   mock.dcs = MockDCS:New()
@@ -78,7 +84,7 @@ end
 local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   local mock = NewMock({
-    --trace = { _traceOn = true, _traceLevel = 3 },
+    --trace = { _traceOn = true, _traceLevel = 4 },
   })
 
   mock.mission:Start()
@@ -99,7 +105,7 @@ end
 local function Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn()
 
   local mock = NewMock({
-    trace = { _traceOn = true, _traceLevel = 3 },
+    trace = { _traceOn = true, _traceLevel = 4 },
   })
 
   mock.mission:Start()

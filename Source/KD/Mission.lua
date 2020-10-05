@@ -316,19 +316,77 @@ end
 -- @param Core.Zone#ZONE zone Parking zone to check.
 -- @param #list<Wrapper.Unit#UNIT> units The list of units to check.
 -- @return true If all units are parked in the zone.
-function Mission:UnitsAreInZone(zone, units)
+function Mission:AreAllUnitsInZone(zone, units)
+
+  self:AssertType(zone, self.moose.zone)
+  self:Trace(4, "Checking if all units are in zone: " .. zone:GetName())
+  
+  if #units == 0 then
+    self:Trace(4, "No units are in the group")
+    return false
+  end
   
   for i = 1, #units do
     local unit = units[i]
     self:Trace(4, "Checking if unit in zone: " .. unit:GetName())
     if not zone:IsVec3InZone(unit:GetVec3()) then
-      self:Trace(4, "Unit is not in zone: " .. unit:GetName())
+      self:Trace(4, "Unit is not in zone")
       return false
     end
   end
   
   self:Trace(4, "All units are in the zone")
   return true
+  
+end
+
+--- Checks if any units are in a zone.
+-- @param #Mission self
+-- @param Core.Zone#ZONE zone Parking zone to check.
+-- @param #list<Wrapper.Unit#UNIT> units The list of units to check.
+-- @return true If any units are parked in the zone.
+function Mission:AreAnyUnitsInZone(zone, units)
+
+  self:AssertType(zone, self.moose.zone)
+  self:Trace(4, "Checking if any units are in zone. Zone=" .. zone:GetName() .. " Units=" .. #units)
+  
+  for i = 1, #units do
+    local unit = units[i]
+    self:Trace(4, "Checking if unit in zone: " .. unit:GetName())
+    if zone:IsVec3InZone(unit:GetVec3()) then
+      self:Trace(4, "Unit is in zone")
+      return true
+    end
+  end
+  
+  self:Trace(4, "No units are in the zone")
+  return false
+  
+end
+
+---
+-- @param #Mission self
+-- @param Core.Zone#ZONE zone Parking zone to check.
+-- @param #list<Wrapper.Unit#UNIT> units The list of units to check.
+-- @return true If any units are parked in the zone.
+function Mission:AreAnyGroupsInZone(zone, groups)
+
+  self:AssertType(zone, self.moose.zone)
+  self:Trace(3, "Checking if any groups are in zone. Zone=" .. zone:GetName() .. " Groups=" .. #groups)
+
+  for i = 1, #groups do
+    local group = groups[i]
+    self:Trace(3, "Checking group: " .. group:GetName())
+    
+    if self:AreAnyUnitsInZone(zone, group:GetUnits()) then
+      self:Trace(3, "A unit from the group is in the zone")
+      return true
+    end
+  end
+
+  self:Trace(3, "No groups were in the zone")
+  return false
+
 end
 
 --- Checks if all units are parked in a zone.
@@ -361,7 +419,7 @@ function Mission:UnitsAreParked(zone, units)
   self:Trace(3, "Stop count: " .. stoppedCount)
   
   local stopped = stoppedCount == #units
-  local inParkZone = self:UnitsAreInZone(zone, units)
+  local inParkZone = self:AreAllUnitsInZone(zone, units)
   
   return (inParkZone and stopped)
 end

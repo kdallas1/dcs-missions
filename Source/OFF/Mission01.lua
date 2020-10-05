@@ -70,7 +70,7 @@ function OFF_Mission01:OFF_Mission01()
     function() return self:AreUnitsAirborne(self.players, self.playerAirborneSpeed) end,
     function()
       self.playersTookOff = true
-      return self:BeginBattle()
+      --self:BeginBattle()
     end
   )
 
@@ -142,8 +142,8 @@ function OFF_Mission01:BeginBattle()
 
   self:MessageAll(MessageLength.VeryShort, "The battle has begun!", true)
 
+  self:MessageAll(MessageLength.VeryShort, "Enemy air inbound", true)
   for i = 1, 3, 1 do
-    self:MessageAll(MessageLength.VeryShort, "Enemy air inbound", true)
     self.redAir[i]:Activate()
   end
 
@@ -158,10 +158,10 @@ function OFF_Mission01:BeginBattle()
       end
       List:Shuffle(randoms)
 
+      self:MessageAll(MessageLength.VeryShort, "Red tanks inbound", true)
+        
       for i = 1, 3, 1 do
         local randomIndex = randoms[i]
-
-        self:MessageAll(MessageLength.VeryShort, "Red tank inbound", true)
         local spawner = self.redTanks[randomIndex]
         self.redTankGroups[#self.redTankGroups] = spawner:Spawn()
       end
@@ -172,8 +172,10 @@ function OFF_Mission01:BeginBattle()
     self:Trace(1, "Blue tanks spawn check, active=" .. Boolean:ToString(self.blueTanksActive))
 
     if self.blueTanksActive then
+      
+      self:MessageAll(MessageLength.VeryShort, "Blue tanks inbound", true)
+      
       for i = 1, 3, 1 do
-        self:MessageAll(MessageLength.VeryShort, "Blue tank inbound", true)
         self.blueTankGroups[#self.blueTankGroups] = self.blueTanks[i]:Spawn()
       end
     end

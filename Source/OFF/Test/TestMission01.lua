@@ -67,9 +67,11 @@ local function Test_Start_Default_StateIsMissionStarted()
 
   mock.mission:Start()
 
-  TestAssert(
-    mock.mission.state.current == MissionState.MissionStarted,
-    "State should be: Mission accomplished")
+  TestAssertEqual(
+    MissionState.MissionStarted,
+    mock.mission.state.current,
+    "state",
+    function(v) return mock.mission.state:GetStateName(v) end)
 
 end
 
@@ -86,9 +88,11 @@ local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   mock.mission:GameLoop()
 
-  TestAssert(
-    mock.mission.state.current == OFF_Mission01.State.PlayersAirborne,
-    "State should be: PlayersAirborne")
+  TestAssertEqual(
+    OFF_Mission01.State.PlayersAirborne,
+    mock.mission.state.current,
+    "state",
+    function(v) return mock.mission.state:GetStateName(v) end)
 
 end
 
@@ -103,10 +107,12 @@ local function Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn()
   mock.mission.stopBlueSpawn.IsVec3InZone = function() return true end
   
   mock.mission:GameLoop()
-
-  TestAssert(
-    mock.mission.state.current == OFF_Mission01.State.RedInStopSpawn,
-    "State should be: RedInStopSpawn")
+  
+  TestAssertEqual(
+    OFF_Mission01.State.RedInStopSpawn,
+    mock.mission.state.current,
+    "state",
+    function(v) return mock.mission.state:GetStateName(v) end)
 
 end
 

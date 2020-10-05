@@ -43,8 +43,16 @@ end
 function Events:HandleEvent(event, handler)
   self:Assert(event, "Arg `event` was nil")
   self:Assert(handler, "Arg `handler` was nil")
-  self.eventHandlers[event] = handler
-  self:Trace(3, "Event handler added, total=" .. #self.eventHandlers)
+  
+  -- events can have multiple handlers
+  if self.eventHandlers[event] == nil then
+    self.eventHandlers[event] = {}
+  end
+  
+  local localHandlers = self.eventHandlers[event]
+  localHandlers[#localHandlers + 1] = handler
+  
+  self:Trace(3, "Event handler added. Total=" .. #self.eventHandlers .. " Event=" .. #localHandlers)
 end
 
 ---
@@ -52,9 +60,13 @@ end
 -- @param #Event event
 function Events:FireEvent(event, arg)
   self:Assert(event, "Arg `event` was nil")
-  local eventHandler = self.eventHandlers[event]
-  if eventHandler then
-    eventHandler(arg)
+  
+  local localHandlers = self.eventHandlers[event]
+  for i = 1, #localHandlers do
+    local eventHandler = localHandlers[i]
+    if eventHandler then
+      eventHandler(arg)
+    end
   end
 end
 

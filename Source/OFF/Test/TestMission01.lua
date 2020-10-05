@@ -60,6 +60,7 @@ local function NewMock(fields)
   Table:Concat(args, fields)
 
   mock.mission = OFF_Mission01:New(args)
+  mock.mission.playerTestOn = false
 
   return mock
 

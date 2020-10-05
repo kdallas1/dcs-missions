@@ -9,7 +9,7 @@ local function NewMock(fields)
   local mock = {}
 
   mock.moose = MockMoose:New(fields)
-  
+
   mock.player1 = mock.moose:MockUnit({ name = "Chevy #001" })
   mock.player2 = mock.moose:MockUnit({ name = "Chevy #002" })
 
@@ -24,7 +24,7 @@ local function NewMock(fields)
     units = { mock.player2, },
     IsAnyInZone = function() return false end
   })
-  
+
   mock.moose:MockZone({ name = "Player Parking" })
   mock.moose:MockZone({ name = "Win" })
   mock.moose:MockZone({ name = "Lose" })
@@ -42,7 +42,7 @@ local function NewMock(fields)
   for i = 1, 3, 1 do
     mock.moose:MockGroup({ name = "Blue Tanks #00" .. i })
   end
-  
+
   mock.dcs = MockDCS:New()
 
   local args = {
@@ -56,13 +56,13 @@ local function NewMock(fields)
   mock.mission = OFF.Mission01:New(args)
 
   return mock
-  
+
 end
 
 local function Test_Start_Default_StateIsMissionStarted()
 
   local mock = NewMock({
-    --trace = { _traceOn = true, _traceLevel = 4 },
+    trace = { _traceOn = true, _traceLevel = 4 },
   })
 
   mock.mission:Start()
@@ -73,11 +73,13 @@ local function Test_Start_Default_StateIsMissionStarted()
 
 end
 
+testOnly = Test_Start_Default_StateIsMissionStarted
+
 local function Test_PlayerSpeedOver100_StateIsPlayerAirborne()
 
   local mock = NewMock({
     --trace = { _traceOn = true, _traceLevel = 3 },
-  })
+    })
 
   mock.mission:Start()
 
@@ -96,7 +98,7 @@ local function Test_RedTanksInStopBlueSpawnZone_StateIsRedInStopSpawn()
 
   local mock = NewMock({
     --trace = { _traceOn = true, _traceLevel = 3 },
-  })
+    })
 
   mock.mission:Start()
 
@@ -135,5 +137,7 @@ function Test_OFF_Mission01()
     Test_BlueTanksInWinZoneAndPlayersParked_MissionAccomplished
   }
 end
+
+
 
 --testOnly = Test_OFF_Mission01

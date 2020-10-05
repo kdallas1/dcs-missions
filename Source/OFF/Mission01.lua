@@ -1,12 +1,12 @@
 dofile(baseDir .. "KD/Mission.lua")
 dofile(baseDir .. "OFF/OFF.lua")
 
---- 
+---
 -- @type OFF.Mission01
 -- @extends KD.Mission#Mission
 OFF.Mission01 = {
   className = "OFF.Mission01",
-  
+
   enableDebugMenu = true,
 
   playerAirborneSpeed = 100,
@@ -39,7 +39,7 @@ function OFF.Mission01:Mission01()
 
   -- TODO: figure out why this fixes the bug (and why the default isn't there)
   self.blueInWinZone = false
-  
+
   self.state:AddStates(OFF.Mission01.State)
   self.state:CopyTrace(self)
 
@@ -51,7 +51,7 @@ function OFF.Mission01:Mission01()
   self.stopRedSpawn = self:NewMooseZone("Stop Red Spawn")
   self.winZone = self:NewMooseZone("Win")
   self.loseZone = self:NewMooseZone("Lose")
-  
+
   self.redAir = {}
   for i = 1, 3, 1 do
     self.redAir[i] = self:GetMooseGroup("Red Air #00" .. i)
@@ -66,7 +66,7 @@ function OFF.Mission01:Mission01()
   for i = 1, 3, 1 do
     self.blueTanks[i] = self:NewMooseSpawn("Blue Tanks #00" .. i)
   end
-  
+
   self.blueTankGroups = {}
   self.redTankGroups = {}
 
@@ -74,7 +74,7 @@ function OFF.Mission01:Mission01()
     OFF.Mission01.State.PlayersAirborne,
     function() return self:AreUnitsAirborne(self.players, self.playerAirborneSpeed) end,
     function()
-      self.playersTookOff = true 
+      self.playersTookOff = true
       return self:BeginBattle()
     end
   )
@@ -82,9 +82,9 @@ function OFF.Mission01:Mission01()
   self.state:TriggerOnce(
     OFF.Mission01.State.RedInStopSpawn,
     function() return self:AreAnyGroupsInZone(self.redTankGroups, self.stopBlueSpawn) end,
-    function() 
-        self.blueTanksActive = false
-        self:MessageAll(MessageLength.Short, "No more blue reinforcements", true)
+    function()
+      self.blueTanksActive = false
+      self:MessageAll(MessageLength.Short, "No more blue reinforcements", true)
     end
   )
 
@@ -92,8 +92,8 @@ function OFF.Mission01:Mission01()
     OFF.Mission01.State.BlueInStopSpawn,
     function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.stopRedSpawn) end,
     function()
-        self.redTanksActive = false
-        self:MessageAll(MessageLength.Short, "No more red reinforcements", true)
+      self.redTanksActive = false
+      self:MessageAll(MessageLength.Short, "No more red reinforcements", true)
     end
   )
 
@@ -101,8 +101,8 @@ function OFF.Mission01:Mission01()
     OFF.Mission01.State.BlueInWinZone,
     function() return self:AreAnyGroupsInZone(self.blueTankGroups, self.winZone) end,
     function()
-        self.blueInWinZone = true
-        self:MessageAll(MessageLength.Short, "Blue tanks made it to the city", true)
+      self.blueInWinZone = true
+      self:MessageAll(MessageLength.Short, "Blue tanks made it to the city", true)
     end
   )
 
@@ -112,30 +112,30 @@ function OFF.Mission01:Mission01()
     function()
       if self.playersTookOff then
         self:MessageAll(MessageLength.Short, "Nice landing!", true)
-      end 
+      end
     end
   )
-  
+
   self.state:TriggerOnce(
     MissionState.MissionFailed,
     function() return self:AreAnyGroupsInZone(self.redTankGroups, self.loseZone) end,
     function() self:MessageAll(MessageLength.Short, "Red tanks made it to our FARP", true) end
   )
-  
+
 end
 
 ---
 -- @param #OFF.Mission01 self
 function OFF.Mission01:OnStart()
 
-    self:BeginBattle()
+  self:BeginBattle()
 
 end
 
 ---
 -- @param #OFF.Mission01 self
 function OFF.Mission01:OnGameLoop()
-  
+
 end
 
 ---
@@ -162,54 +162,54 @@ function OFF.Mission01:OnUnitDead(unit)
 end
 
 function OFF.Mission01:BeginBattle()
-    
-    self:MessageAll(MessageLength.VeryShort, "The battle has begun!", true)
 
-    for i = 1, 3, 1 do
-        self:MessageAll(MessageLength.VeryShort, "Enemy air inbound", true)
-        self.redAir[i]:Activate()
+  self:MessageAll(MessageLength.VeryShort, "The battle has begun!", true)
+
+  for i = 1, 3, 1 do
+    self:MessageAll(MessageLength.VeryShort, "Enemy air inbound", true)
+    self.redAir[i]:Activate()
+  end
+
+  self.moose.scheduler:New(nil, function()
+    self:Trace(1, "Red tanks spawn check, active=" .. Boolean:ToString(self.redTanksActive))
+
+    if self.redTanksActive then
+
+      local randoms = {}
+      for i = 1, 7, 1 do
+        randoms[i] = i
+      end
+      List:Shuffle(randoms)
+
+      for i = 1, 3, 1 do
+        local randomIndex = randoms[i]
+
+        self:MessageAll(MessageLength.VeryShort, "Red tank inbound", true)
+        local spawner = self.redTanks[randomIndex]
+        self.redTankGroups[#self.redTankGroups] = spawner:Spawn()
+      end
     end
+  end, {}, 0, self.redTankSpawnRate)
 
-    self.moose.scheduler:New(nil, function()
-        self:Trace(1, "Red tanks spawn check, active=" .. Boolean:ToString(self.redTanksActive))
+  self.moose.scheduler:New(nil, function()
+    self:Trace(1, "Blue tanks spawn check, active=" .. Boolean:ToString(self.blueTanksActive))
 
-        if self.redTanksActive then
-
-            local randoms = {}
-            for i = 1, 7, 1 do
-                randoms[i] = i
-            end
-            List:Shuffle(randoms)
-
-            for i = 1, 3, 1 do
-                local randomIndex = randoms[i]
-
-                self:MessageAll(MessageLength.VeryShort, "Red tank inbound", true)
-                local spawner = self.redTanks[randomIndex]
-                self.redTankGroups[#self.redTankGroups] = spawner:Spawn()
-            end
-        end
-    end, {}, 0, self.redTankSpawnRate)
-
-    self.moose.scheduler:New(nil, function()
-        self:Trace(1, "Blue tanks spawn check, active=" .. Boolean:ToString(self.blueTanksActive))
-
-        if self.blueTanksActive then
-            for i = 1, 3, 1 do
-                self:MessageAll(MessageLength.VeryShort, "Blue tank inbound", true)
-                self.blueTankGroups[#self.blueTankGroups] = self.blueTanks[i]:Spawn()
-            end
-        end
-    end, {}, 0, self.blueTankSpawnRate)
+    if self.blueTanksActive then
+      for i = 1, 3, 1 do
+        self:MessageAll(MessageLength.VeryShort, "Blue tank inbound", true)
+        self.blueTankGroups[#self.blueTankGroups] = self.blueTanks[i]:Spawn()
+      end
+    end
+  end, {}, 0, self.blueTankSpawnRate)
 
 end
 
 function OFF.Mission01:AreAnyGroupsInZone(groups, zone)
-    
+
   for i = 1, #groups, 1 do
     local group = groups[i]
     if self:UnitsAreInZone(zone, group:GetUnits()) then
-        return true
+      return true
     end
   end
 
@@ -218,7 +218,7 @@ function OFF.Mission01:AreAnyGroupsInZone(groups, zone)
 end
 
 function Mission:AreUnitsAirborne(units, speed)
-  
+
   self:Trace(3, "No units to check if airborne")
 
   if #units == 0 then
@@ -226,21 +226,21 @@ function Mission:AreUnitsAirborne(units, speed)
   end
 
   self:Trace(3, "Checking if units airborn")
-  
+
   local airbornCount = 0
   for i = 1, #units do
     local unit = units[i]
     self:Trace(3, "Checking unit name: " .. unit:GetName())
     self:Trace(3, "Checking unit velocity: " .. unit:GetVelocityKNOTS())
-    
+
     if (unit:GetVelocityKNOTS() > speed) then
-        airbornCount = airbornCount + 1
+      airbornCount = airbornCount + 1
     end
   end
-  
+
   self:Trace(3, "Unit count: " .. #units)
   self:Trace(3, "Airborne count: " .. airbornCount)
-  
+
   return (airbornCount == #units)
 end
 

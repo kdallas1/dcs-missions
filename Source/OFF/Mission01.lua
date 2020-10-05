@@ -168,7 +168,7 @@ function OFF_Mission01:BeginBattle()
       for i = 1, self.redTanksMaxPerSpawn do
         local randomIndex = randoms[i]
         local spawner = self.redTanks[randomIndex]
-        self.redTankGroups[#self.redTankGroups] = spawner:Spawn()
+        self.redTankGroups[#self.redTankGroups + 1] = spawner:Spawn()
       end
     end
   end, {}, 0, self.redTankSpawnRate)
@@ -181,7 +181,7 @@ function OFF_Mission01:BeginBattle()
       self:MessageAll(MessageLength.VeryShort, "Blue tanks inbound", true)
       
       for i = 1, self.blueTanksSpawnerMax do
-        self.blueTankGroups[#self.blueTankGroups] = self.blueTanks[i]:Spawn()
+        self.blueTankGroups[#self.blueTankGroups + 1] = self.blueTanks[i]:Spawn()
       end
     end
   end, {}, 0, self.blueTankSpawnRate)

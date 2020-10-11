@@ -26,9 +26,6 @@ function MockDCS:MockDCS()
       setUserFlag = function() end
     }
   }
-  self.timer = {
-    getAbsTime = function() return 1 end
-  }
 end
 
 MockDCS = createClass(Moose, MockDCS)

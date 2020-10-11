@@ -84,9 +84,6 @@ end
 ---
 -- @param #OFF_Mission02 self
 function OFF_Mission02:OnStart()
-
-  math.randomseed(self.dcs.timer.getAbsTime())
-  math.random()
   
   local redMalitiaRandom = math.random(1, self.redMalitiaOptions)
   local redRoadblockRandom = math.random(1, self.redRoadblockOptions)

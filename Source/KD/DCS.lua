@@ -21,7 +21,6 @@ function DCS:DCS()
   self.unit = Unit
   self.coalition = coalition
   self.trigger = trigger
-  self.timer = timer
 end
 
 DCS = createClass(KDObject, DCS)

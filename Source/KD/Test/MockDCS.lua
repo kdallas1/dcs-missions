@@ -27,7 +27,7 @@ function MockDCS:MockDCS()
     }
   }
   self.timer = {
-    getAbsTime = function() return os.time() end
+    getAbsTime = function() return 1 end
   }
 end
 

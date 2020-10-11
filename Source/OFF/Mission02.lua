@@ -53,7 +53,7 @@ function OFF_Mission02:OFF_Mission02()
 
   self.redRoadblockGroups = {}
   for i = 1, self.redRoadblockOptions do
-    self.redRoadblockGroups[i] = self:NewMooseSpawn("Red Road Block #00" .. i)
+    self.redRoadblockGroups[i] = self:GetMooseGroup("Red Road Block #00" .. i)
   end
 
   self.state:TriggerOnce(
@@ -85,11 +85,22 @@ end
 -- @param #OFF_Mission02 self
 function OFF_Mission02:OnStart()
 
+  math.randomseed(os.time())
+  math.random()
+  
   local redMalitiaRandom = math.random(1, self.redMalitiaOptions)
   local redRoadblockRandom = math.random(1, self.redRoadblockOptions)
+  self:Trace(1, "Random malitia index: " .. redMalitiaRandom)
+  self:Trace(1, "Random roadblock index: " .. redRoadblockRandom)
   
-  self.redMalitiaGroups[redMalitiaRandom]:Activate()
-  self.redRoadblockGroups[redRoadblockRandom]:Activate()
+  local malitia = self.redMalitiaGroups[redMalitiaRandom]
+  local roadblock = self.redRoadblockGroups[redRoadblockRandom]
+  
+  self:Assert(malitia, "Couldn't get random malitia")
+  self:Assert(roadblock, "Couldn't get random roadblock")
+  
+  malitia:Activate()
+  roadblock:Activate()
   
   if self.enableDebugMenu then
     self:CreateDebugMenu({

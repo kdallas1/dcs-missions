@@ -30,6 +30,8 @@ Mission = {
   gameLoopInterval = 1,
   messageTimeVeryShort = 5,
   messageTimeShort = 20,
+  messageTimeLessShort = 30,
+  messageTimeLessLong = 60,
   messageTimeLong = 200,
   soundCounter = 1,
   
@@ -91,6 +93,8 @@ MessageLength = {
   VeryShort     = 0,
   Short         = 1,
   Long          = 2,
+  LessShort     = 3,
+  LessLong      = 4
 }
 
 ---
@@ -373,10 +377,13 @@ end
 ---
 -- @param #Mission self
 -- @param Core.Zone#ZONE zone Parking zone to check.
--- @param #list<Wrapper.Unit#UNIT> units The list of units to check.
+-- @param #list<Wrapper.Unit#UNIT> groups The list of units to check.
 -- @return true If any units are parked in the zone.
 function Mission:AreAnyGroupsInZone(zone, groups)
 
+  self:Assert(zone ~= nil, "Arg: `zone` was nil.")
+  self:Assert(groups ~= nil, "Arg: `groups` was nil.")
+  
   self:AssertType(zone, self.moose.zone)
   self:Trace(3, "Checking if any groups are in zone. Zone=" .. zone:GetName() .. " Groups=" .. #groups)
 
@@ -982,6 +989,12 @@ function Mission:MessageAll(length, message, playSound)
   elseif length == MessageLength.Short then
     duration = self.messageTimeShort
     logType = "S"
+  elseif length == MessageLength.LessShort then
+    duration = self.messageTimeLessShort
+    logType = "LS"
+  elseif length == MessageLength.LessLong then
+    duration = self.messageTimeLessLong
+    logType = "LL"
   elseif length == MessageLength.Long then
     duration = self.messageTimeLong
     logType = "L"

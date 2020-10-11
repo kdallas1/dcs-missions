@@ -68,10 +68,21 @@ local function Test_Start_Default_StateIsMissionStarted()
 
 end
 
+local function Test_OnEnemeyDestroyed()
+
+  local mock = NewMock({
+    --trace = { _traceOn = true, _traceLevel = 4 },
+  })
+
+  mock.mission:OnEnemeyDestroyed()
+
+end
+
 function Test_OFF_Mission02()
   return RunTests {
     "OFF_Mission02",
     Test_Start_Default_StateIsMissionStarted,
+    Test_OnEnemeyDestroyed
   }
 end
 

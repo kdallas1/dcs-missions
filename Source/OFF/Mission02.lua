@@ -152,16 +152,12 @@ function OFF_Mission02:OnEnemeyDestroyed()
     "Bucky, this is Colt. We have taken out two enemy groups. The town looks clear now.", 
     true)
 
-  self.moose.scheduler:New(
-    nil,
-      function()
-        self:MessageAll(MessageLength.LessShort, 
-          "Roger that Colt. We are happy to proceed. You may RTB. Bucky Out.", 
-          true)
-    end,
-    6
-  )
-    
+  self.moose.scheduler:New(nil, function()
+    self:MessageAll(MessageLength.LessShort, 
+      "Roger that Colt. We are happy to proceed. You may RTB. Bucky Out.",
+      true)
+  end, {}, 6)
+  
 end
 
 ---

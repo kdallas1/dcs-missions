@@ -31,11 +31,11 @@ local function NewMock(fields)
   mock.moose:MockGroup({ name = "Blue Convoy Stopped" })
   mock.moose:MockGroup({ name = "Blue Convoy Moving" })
 
-  for i = 1, 3, 1 do
+  for i = 1, 3 do
     mock.moose:MockGroup({ name = "Red Units #00" .. i })
   end
 
-  for i = 1, 3, 1 do
+  for i = 1, 3 do
     mock.moose:MockGroup({ name = "Red Road Block #00" .. i })
   end
 
@@ -74,6 +74,5 @@ function Test_OFF_Mission02()
     Test_Start_Default_StateIsMissionStarted,
   }
 end
-
 
 --testOnly = Test_OFF_Mission02

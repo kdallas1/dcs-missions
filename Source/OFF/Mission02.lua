@@ -89,7 +89,7 @@ function OFF_Mission02:OnStart()
   local redRoadblockRandom = math.random(1, self.redRoadblockOptions)
   
   self.redMalitiaGroups[redMalitiaRandom]:Activate()
-  self.redMalitiaGroups[redRoadblockRandom]:Activate()
+  self.redRoadblockGroups[redRoadblockRandom]:Activate()
   
   if self.enableDebugMenu then
     self:CreateDebugMenu({
@@ -108,7 +108,7 @@ function OFF_Mission02:OnUnitDead(unit)
 
   self:Trace(1, "Unit dead: " .. unit:GetName())
   
-  if string.match(unit:GetName(), "Blue Convoy") then
+  if string.match(unit:GetName(), "Blue Convoy Moving") then
   
     self.blueConvoyDead = self.blueConvoyDead + 1 
   

@@ -185,7 +185,7 @@ function Test_OFF_Mission01()
     Test_BlueTanksInStopRedSpawnZone_StateIsBlueInStopSpawn,
     Test_RedTanksInLoseZone_StateIsMissionFailed,
     Test_BlueTanksInWinZone_StateIsBlueInWinZone,
-    Test_BlueTanksInWinZoneAndPlayersParked_MissionAccomplished
+    --Test_BlueTanksInWinZoneAndPlayersParked_MissionAccomplished
   }
 end
 

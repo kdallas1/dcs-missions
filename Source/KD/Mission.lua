@@ -1244,5 +1244,12 @@ function Mission:UpdatePlayers()
 
 end
 
+---
+-- @param #Mission self
+function Mission:Schedule(runFunction, start)
+  
+  self.moose.scheduler:New(nil, runFunction, {}, start)
+  
+end
 
 Mission = createClass(KDObject, Mission)

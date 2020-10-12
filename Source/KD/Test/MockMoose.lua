@@ -135,6 +135,10 @@ function MockMoose:MockScheduler(fields)
   )
 
   scheduler.New = function(self, object, runFunction, args, start)
+  
+    assert(type(runFunction) == "function", "Expected `runFunction` to be a function.")
+    assert(type(args) == "table", "Expected `args` to be a table.")
+    assert(type(start) == "number", "Expected `start` to be a number.")
 
     self.runFunction = runFunction
     self.Run = function(self)

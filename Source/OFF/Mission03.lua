@@ -32,7 +32,7 @@ function OFF_Mission03:OFF_Mission03()
   self.enemyDestroyed = false
 
   --self:SetTraceLevel(3)
-  self.playerTestOn = true
+  --self.playerTestOn = true
   self.testPlayerGroupName = "Test"
   self.testPlayerUnitName = "Test"
 

@@ -21,9 +21,14 @@ Mission02.State = {
 function Mission02:Mission02()
 
   --self:SetTraceLevel(3)
-  --self.playerTestOn = false
+  self.playerTestOn = true
+  self.testPlayerGroupName = "Test"
+  self.testPlayerUnitName = "Test"
 
   self.state:AddStates(Mission02.State)
+  
+  self.playerPrefix = "Dodge"
+  self.singlePlayerGroupMode = false
   
 end
 
@@ -32,7 +37,7 @@ end
 function Mission02:OnStart()
   
   self:MessageAll(MessageLength.Long, "Mission 2: Assist with a hostage rescue in enemy territory.")
-  self:MessageAll(MessageLength.Long, "Read the mission brief before takeoff")
+  self:MessageAll(MessageLength.Long, "Read the mission brief enroute to WP1")
   
 end
 

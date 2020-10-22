@@ -868,24 +868,37 @@ function Mission:CountAliveUnitsFromSpawn(spawn)
   for i = 1, spawn.SpawnCount do
     local group = spawn:GetGroupFromIndex(i)
     if group then
-      self:Trace(3, "Checking group for alive count: " .. group:GetName())
-      
-      -- Note: Moose randomly returns either nil or 0 from GROUP:GetUnits()
-      local units = group:GetUnits()
-      if units then
-        for j = 1, #units do
-          local unit = units[j]
-          self:Trace(3, "Checking if unit is alive: " .. unit:GetName())
-          
-          if unit:IsAlive() then
-            count = count + 1
-          end
-        end
-      end
+      count = count + self:CountAliveUnitsFromGroup(group)
     end
   end
   self:Trace(3, "Found units alive in spawn group: " .. count)
   return count
+end
+
+---
+-- @param #Mission self
+-- @param Core.Spawn#GROUP group
+function Mission:CountAliveUnitsFromGroup(group)
+
+  self:AssertType(group, self.moose.group)
+  self:Trace(3, "Checking group for alive count: " .. group:GetName())
+  
+  local count = 0
+  local units = group:GetUnits()
+  if units then
+    for j = 1, #units do
+      local unit = units[j]
+      self:Trace(3, "Checking if unit is alive: " .. unit:GetName())
+      
+      if unit:IsAlive() then
+        count = count + 1
+      end
+    end
+  end
+  
+  self:Trace(3, "Found units alive in group: " .. count)
+  return count
+  
 end
 
 --- 
